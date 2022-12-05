@@ -11,22 +11,25 @@ import pandas as pd
 
 
 
-pm_df = pd.read_csv(r"/Users/montserrattrullsjuanola/Downloads/datosSO2.csv",
+pm_df = pd.read_csv(r"/Users/montserrattrullsjuanola/Downloads/datosSO2.csv",  #here I import the data, they are the data from so2 in barcelona for the last 4 years
                           index_col=0, header=0)
 
 pm_df["hmean"]=pm_df[['h01', 'h02', 'h03', 'h04', 'h05', 'h06','h07', 'h08','h09', 
                          'h11','h12', 'h13','h14','h15', 'h16', 'h17','h18', 
-                         'h19','h20','h21', 'h22','h23','h24']].mean(axis=1)
-pm_df["hmean"] = pm_df["hmean"].fillna(value=0)
+                         'h19','h20','h21', 'h22','h23','h24']].mean(axis=1) #here I create a new column that is the daily average of concentration, I average over the 24 hours of the day
+
+pm_df["hmean"] = pm_df["hmean"].fillna(value=0) 
 
 
-
+#I create a list with the daily averages of the year and the station I want, I calculate the annual average from the daily averages
 
 
 meanhebron=[]
 hebron_df = pm_df.loc[pm_df['altitud'] == 136]
 hebronn=np.array(hebron_df["hmean"])
-        
+
+# -------------------- Fourier transform in order to see if the behaviour of the gas has any periodicity -------------------#
+
 aa=np.fft.fft(hebronn)
 temps=np.linspace(0,1409,1409)
 plt.plot(temps,aa)
@@ -34,7 +37,7 @@ plt.xlabel('t (dies)')
 plt.title('Transformada de Fourier de les concentracions', y=1.1)
 plt.show()
 
-
+# -------------------------------------------------------------------------------------------------------------------------#
 
 
 any2019hebron = hebron_df.iloc[1045:,:]
@@ -58,6 +61,7 @@ hebron2022 = np.array(any2022hebron["hmean"])
 meanhebron2022=np.mean(hebron2022)
 meanhebron.append(meanhebron2022)
 
+# For the Eixample area I also calculate the monthly average from the daily averages of a whole year, I have to reverse the list because otherwise it would go from December to January
 
 meaneixample=[]
 eixample_df = pm_df.loc[pm_df['altitud'] == 26]
@@ -91,12 +95,6 @@ for i in range(0,360,30):
     Meanrev.append(meanrev)
     
 
-
-
-
-
-
-
 any2021eixample = eixample_df.iloc[314:679,:]
 eixample2021 = np.array(any2021eixample["hmean"])
 meaneixample2021=np.mean(eixample2021)
@@ -109,11 +107,6 @@ for i in range(0,360,30):
     meanrev3=np.mean(eixample2021rev1)
     Meanrev3.append(meanrev3)
     
-
-
-
-
-
 
 any2022eixample = eixample_df.iloc[:314,:]
 eixample2022 = np.array(any2022eixample["hmean"])
@@ -129,7 +122,7 @@ for i in range(0,330,30):
     Meanrev4.append(meanrev4)
     
 
-
+# Here I plot the monthly averages for the 2019 and 2020 in a bar graph
 
 mesos=np.linspace(0,12,12)
 labels=['Gen','Feb','Mar','Abr','Mai','Jun','Jul','Ago','Set','Oct','Nov','Des']
@@ -225,7 +218,7 @@ meanpalau.append(meanpalau2022)
 
 
     
-
+#Here I plot the annual averages for each station for the last 4 years in a bar graph
 
 
 a=np.linspace(0,4,4)
